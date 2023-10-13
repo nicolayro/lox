@@ -9,4 +9,5 @@ Some notes about the language
     - Variables are defined with 'var'. Uninitialized variables default to 'nil'.
     - Functions are defined with 'fun'.
     - First class functions (Closures!)
-    - Classes!
+    - Classes! And single inheritance.
+

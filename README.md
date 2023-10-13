@@ -7,3 +7,23 @@ Interpreter written based on [Crafting Interpreters](https://craftinginterpreter
 - jlox: Simple implementation in Java.
 - clox: Full implementation in C.
 - notes: Some thoughs from along the way
+
+## Usage (jlox)
+
+To run jlox, simply compile and run Jlox.java. For example:
+
+Compile:
+```sh
+javac -d out/ Jlox.java
+```
+
+Run
+```sh
+java -cp out/ Jlox
+```
+
+Run `.lox` source code:
+```sh
+java -cp out/ Jlox <file>
+```
+

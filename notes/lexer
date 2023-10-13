@@ -1,0 +1,5 @@
+Nox will have two modes: Interpret file and a REPL, sort of an interactive verison (like most scripting languages);
+It's useful to seperate error generation and error reporting.
+The error handling in this first part is quite interesting: using the error function,
+and keeping track of if there has been an error so that we can continue lexing while ensuring that
+the code won't run.

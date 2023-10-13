@@ -1,0 +1,7 @@
+print "Hello, World";
+
+var a = 40;
+var b = 2;
+var c = a + b;
+
+print c;
