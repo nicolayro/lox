@@ -1,0 +1,12 @@
+Lox is high-level language is a language in the C-family. (Somewhat similar to javascript)
+Some notes about the language
+    - Dynamically typed (saves time implementing it)
+    - Automatic memory management (garbage collector - nice challenge to implement)
+    - One type of number (double precision floating point)
+    - 'Nil' (name helps it differentiate from the languages wer are implemnting it in :))
+    - Different datatypes are never equal (no implicit type conversion)
+    - No bitwise, shift, modulo or ternary operators (maybe I can implement?)
+    - Variables are defined with 'var'. Uninitialized variables default to 'nil'.
+    - Functions are defined with 'fun'.
+    - First class functions (Closures!)
+    - Classes!

@@ -1,0 +1,31 @@
+At first i wanted to learn by actually creating something, particularily in C.
+Crafting interpreters seems like a nice step. Looking forward to learning more about
+programming languages and getting more expirience in a different type of project.
+
+# The journey of interpreting a language
+
+==== front end ====
+Lexing: also known as *scanning* the program into *tokens*.
+Parsing: creating syntax tree for program. allows reporting of syntax errors.
+Static analysis: 
+    - Binding and resolution
+    - Type check
+
+==== middle end ====
+Intermidiate representation: the connecter between source and destination.
+    - Multilple different types exist
+Optimization: when we know what the program means - we can safely swap how it does it.
+    - Simple example is to precompute arithmetic
+
+==== back end ====
+Code generation: create cpu instructions (or bytecode representation).
+Runtime: code that is required for running the program, like garbage collector.
+
+
+==== short hands ====
+Single pass compiler: one run through of the whole code.
+Three-walk interpreters: typical student project.
+Transpiler: don't implemented backend - just translate into some other language.
+
+It's actually not so easy to define the difference between a compiler and
+an interpreter. This is analogous to fruits and vegetables.
