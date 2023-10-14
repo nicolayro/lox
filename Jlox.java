@@ -83,7 +83,7 @@ class Lexer {
         while (!isDone()) {
             start = curr;
 
-            char c = next();
+            char c = nextToken();
             switch (c) {
                 case ',' -> addToken(TokenType.COMMA);
                 case '.' -> addToken(TokenType.DOT);
@@ -92,7 +92,7 @@ class Lexer {
                 case '*' -> addToken(TokenType.STAR);
                 case '/' -> {
                     if (match('/')) {
-                        while (peek() != '\n' && !isDone()) next();
+                        while (peek() != '\n' && !isDone()) nextToken();
                     } else {
                         addToken(TokenType.SLASH);
                     }
@@ -109,11 +109,11 @@ class Lexer {
                 case '"' -> {
                     while (peek() != '"' && !isDone()) {
                         if (peek() == '\n') line++;
-                        next();
+                        nextToken();
                     }
 
                     if (!isDone()) {
-                        next(); // Include ending '"'
+                        nextToken(); // Include ending '"'
                         String str = source.substring(start + 1, curr - 1);
                         addToken(TokenType.STRING, str);
                     } else {
@@ -125,17 +125,17 @@ class Lexer {
                 default -> {
                     // After lexing all tokens, we are left with a number, keyword, variable definition or error
                     if (isDigit(c)) {
-                        while (isDigit(peek())) next();
+                        while (isDigit(peek())) nextToken();
 
                         if (peek() == '.' && isDigit(peekNext())) {
-                            next();
-                            while (isDigit(peek())) next();
+                            nextToken();
+                            while (isDigit(peek())) nextToken();
                         }
 
                         Double number = Double.parseDouble(source.substring(start, curr));
                         addToken(TokenType.NUMBER, number);
                     } else if(isAlpha(c)) {
-                        while (isAlphaOrNumeric(peek())) next();
+                        while (isAlphaOrNumeric(peek())) nextToken();
 
                         String str = source.substring(start, curr);
                         TokenType type = KEYWORDS.getOrDefault(str, TokenType.IDENTIFIER);
@@ -151,7 +151,7 @@ class Lexer {
         return tokens;
     }
 
-    private char next() {
+    private char nextToken() {
         return source.charAt(curr++);
     }
 
@@ -203,6 +203,76 @@ class Lexer {
     private boolean isAlphaOrNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
+}
+
+abstract class Expr {
+    abstract <R> R accept(Visitor<R> visitor);
+    interface Visitor<R> {
+        R visitBinaryExpr(Binary expr);
+        R visitGroupingExpr(Grouping expr);
+        R visitLiteralExpr(Literal expr);
+        R visitUnaryExpr(Unary expr);
+    }
+
+    static class Binary extends Expr {
+        Binary(Expr left, Token operator, Expr right) {
+            this.left = left;
+            this.operator = operator;
+            this.right = right;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBinaryExpr(this);
+        }
+
+        final Expr left;
+        final Token operator;
+        final Expr right;
+    }
+
+    static class Grouping extends Expr {
+        Grouping(Expr expression) {
+            this.expression = expression;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitGroupingExpr(this);
+        }
+
+        final Expr expression;
+    }
+
+    static class Literal extends Expr {
+        Literal(Object value) {
+            this.value = value;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitLiteralExpr(this);
+        }
+
+        final Object value;
+    }
+
+    static class Unary extends Expr {
+        Unary(Token operator, Expr right) {
+            this.operator = operator;
+            this.right = right;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitUnaryExpr(this);
+        }
+
+        final Token operator;
+        final Expr right;
+    }
+
+
 }
 
 public class Jlox {

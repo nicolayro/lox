@@ -1,7 +1,35 @@
-print "Hello, World";
+class Car {
+    string color;
+    number position;
+    number speed;
 
-var a = 40;
-var b = 2;
-var c = a + b;
+    init(color) {
+        this.color = color;
+        this.position = 0;
+        this.speed = 0;
+    }
 
-print c;
+    accelerate() {
+        speed = 1.5 * speed + 1;
+        position = position + speed;
+    }
+} 
+
+fun main() {
+    print "Hello, World";
+
+    var a = 40;
+    var b = 2;
+    var c = a + b;
+
+    print c;
+
+    var car = Car("red");
+    car.accelerate();
+
+    print "The position of the car is: " + car.position;
+}
+
+
+
+
