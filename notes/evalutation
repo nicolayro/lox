@@ -1,0 +1,4 @@
+After the expression have been passed, it's time to actually evaluate them.
+The first step is evaluating them using Java code - like som simulation :).
+
+
