@@ -1,0 +1,35 @@
+The auto generated classes thing is a bit wierd. Interesting to see
+this way of solving the problem. Looking forward to how this will be solved in C.
+The actual usage of the Expr.Visitor is nice.
+
+As for actually parsing the expressions, this chapter seems exiciting at first. The author
+even reference the book "Compilers: Principles, Techniques and Tools", which has a literal
+dragon gettings slayed  by a knight labeled "LALR Parser Generator". Hilarious!
+
+The first version of the Lox grammer was ambigous, because it allows for two of the same string
+to generate multiple syntax trees. Therefore we must introduce *precedence*
+and *associativity* (Order of operations). 
+Remember: This does not only apply to mathematical operations, also assignements and comperations!
+
+I have never thought of the fact that the order of operations for a list of multiplications
+actually matter when using IEEE 754 floating-point numbers.
+
+Recursive descent: We're using a technique where we recursevily go deeper through
+the expressions, based on the previously defined grammar. The point is not only to
+produce a syntax tree, but also to detect invalid syntax. Some important
+parser characteristics are:
+    - Detect and report error
+    - The parser also has to be able to parse invalid source code - errors are 
+    inevitable, and so the parser cannot crash if given bad input.
+    - Be fast!
+    - Avoid abort after hitting error - show as many error as possible, to
+    avoid a situation where everytime an error is fixed, a new one appears.
+    - Avoid misleading errors that are misunderstandings based on previous error!
+I did not quite understand the concept of Panic mode error recovery
+
+Error productions: Another way to handle errors would be to actually add
+parsing for common error, such as '+123', and actually handle them - but instead
+of adding them to the synax tree we report a more descriptive error.
+
+
+

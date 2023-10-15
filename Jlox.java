@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Lox interpreter written in Java. It's written in a sort of procedural style.
+ * Lox interpreter written in Java. The entire implementation is contained within this one file, to give a overview of
+ * everything an interpreter contains.
  *
- * @Author Nicolay Caspersen Roness
+ * Written by Nicolay Caspersen Roness
+ *      October 2023
  */
 
 enum TokenType {
@@ -80,7 +82,7 @@ class Lexer {
     }
 
     List<Token> lexTokens() {
-        while (!isDone()) {
+        while (!isAtEnd()) {
             start = curr;
 
             char c = nextToken();
@@ -92,7 +94,7 @@ class Lexer {
                 case '*' -> addToken(TokenType.STAR);
                 case '/' -> {
                     if (match('/')) {
-                        while (peek() != '\n' && !isDone()) nextToken();
+                        while (peek() != '\n' && !isAtEnd()) nextToken();
                     } else {
                         addToken(TokenType.SLASH);
                     }
@@ -107,12 +109,12 @@ class Lexer {
                 case '<' -> addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
                 case '>' -> addToken(match('=') ? TokenType.GREATER_EQUAL: TokenType.GREATER);
                 case '"' -> {
-                    while (peek() != '"' && !isDone()) {
+                    while (peek() != '"' && !isAtEnd()) {
                         if (peek() == '\n') line++;
                         nextToken();
                     }
 
-                    if (!isDone()) {
+                    if (!isAtEnd()) {
                         nextToken(); // Include ending '"'
                         String str = source.substring(start + 1, curr - 1);
                         addToken(TokenType.STRING, str);
@@ -135,7 +137,7 @@ class Lexer {
                         Double number = Double.parseDouble(source.substring(start, curr));
                         addToken(TokenType.NUMBER, number);
                     } else if(isAlpha(c)) {
-                        while (isAlphaOrNumeric(peek())) nextToken();
+                        while (isAlphaNumeric(peek())) nextToken();
 
                         String str = source.substring(start, curr);
                         TokenType type = KEYWORDS.getOrDefault(str, TokenType.IDENTIFIER);
@@ -165,7 +167,7 @@ class Lexer {
     }
 
     private char peek() {
-        if (isDone()) {
+        if (isAtEnd()) {
             return '\0';
         }
         return source.charAt(curr);
@@ -178,12 +180,12 @@ class Lexer {
         return source.charAt(curr + 1);
     }
 
-    private boolean isDone() {
+    private boolean isAtEnd() {
         return curr >= source.length();
     }
 
     private boolean match(char expected) {
-        if (isDone() || source.charAt(curr) != expected) {
+        if (isAtEnd() || source.charAt(curr) != expected) {
             return false;
         }
         curr++;
@@ -200,7 +202,7 @@ class Lexer {
                 c == '_';
     }
 
-    private boolean isAlphaOrNumeric(char c) {
+    private boolean isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
 }
@@ -275,6 +277,173 @@ abstract class Expr {
 
 }
 
+class Parser {
+    private static class ParseError extends RuntimeException {}
+
+    private final List<Token> tokens;
+    private int curr = 0;
+
+    Parser(List<Token> tokens) {
+        this.tokens = tokens;
+    }
+
+    Expr parse() {
+        try {
+            return expression();
+        } catch (ParseError error) {
+            return null;
+        }
+    }
+
+    private Expr expression() {
+        return equality();
+    }
+
+    private Expr equality () {
+        Expr expr = comparison();
+
+        while (match(TokenType.BANG, TokenType.BANG_EQUAL)) {
+            Token operator = previous();
+            Expr right = comparison();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr comparison() {
+        Expr expr = term();
+
+        while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
+            Token operator = previous();
+            Expr right = term();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr term() {
+        Expr expr = factor();
+
+        while (match(TokenType.PLUS, TokenType.MINUS)) {
+            Token operator = previous();
+            Expr right = factor();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr factor() {
+        Expr expr = unary();
+
+        while (match(TokenType.STAR, TokenType.SLASH)) {
+            Token operator = previous();
+            Expr right = unary();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr unary() {
+        if (match(TokenType.BANG, TokenType.MINUS)) {
+            Token operator = previous();
+            Expr right = unary();
+            return new Expr.Unary(operator, right);
+        }
+        return primary();
+    }
+
+    private Expr primary() {
+        if (match(TokenType.FALSE)) return new Expr.Literal(false);
+        if (match(TokenType.TRUE)) return new Expr.Literal(true);
+        if (match(TokenType.NIL)) return new Expr.Literal(null);
+
+        if (match(TokenType.NUMBER, TokenType.STRING)) {
+            return new Expr.Literal(previous().literal);
+        }
+
+        if (match(TokenType.LEFT_PAREN)) {
+            Expr expr = expression();
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+            return new Expr.Grouping(expr);
+        }
+
+        throw error(peek(), "Expected expression.");
+    }
+
+    private Token consume(TokenType type, String msg) {
+        if (isCurrType(type)) {
+            return next();
+        }
+
+        throw error(peek(), msg);
+    }
+
+    private ParseError error(Token token, String msg) {
+        Jlox.error(token, msg);
+        return new ParseError();
+    }
+
+    private void synchronize() {
+        next();
+
+        while (!isAtEnd()) {
+            if (previous().type == TokenType.SEMICOLON) {
+                return;
+            }
+
+            switch (peek().type) {
+                case CLASS, FUN, VAR, FOR, IF, WHILE, PRINT, RETURN -> {
+                    return;
+                }
+            }
+
+            next();
+        }
+    }
+
+    private boolean match(TokenType... types) {
+        for (TokenType type : types) {
+            if (isCurrType(type)) {
+                next();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Token next() {
+        if (!isAtEnd()) {
+            curr++;
+        }
+        return previous();
+    }
+
+    private boolean isCurrType(TokenType type) {
+        if (isAtEnd()) {
+            return false;
+        }
+
+        return peek().type == type;
+    }
+
+    private boolean isAtEnd() {
+        return peek().type == TokenType.EOF;
+    }
+
+    private Token peek() {
+        return tokens.get(curr);
+    }
+
+    private Token previous() {
+        return tokens.get(curr - 1);
+    }
+
+
+}
+
 public class Jlox {
     static boolean hadError = false;
 
@@ -315,14 +484,27 @@ public class Jlox {
     private static void run(String source) {
         Lexer lexer = new Lexer(source);
         List<Token> tokens = lexer.lexTokens();
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
 
-        for (Token token : tokens) {
-            System.out.println(token);
+        if (hadError) {
+            return;
         }
+
+        System.out.println(expression);
     }
 
     static void error(int line, String message) {
         report(line, "", message);
+    }
+
+
+    static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", message);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     private static void report(int line, String location, String message) {
