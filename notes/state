@@ -1,0 +1,6 @@
+Now we are implementing state! Statements don't evaluate, instead
+they produce side effects. Some examples are producing user visible output
+or modifying state.
+
+A program in Lox is defined as a number of statements and the special EOF
+token.

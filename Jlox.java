@@ -293,16 +293,37 @@ class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError error) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(statement());
         }
+
+        return statements;
     }
 
     private Expr expression() {
         return equality();
+    }
+
+    private Stmt statement() {
+        if (match(TokenType.PRINT)) {
+            return printStatement();
+        }
+
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr value = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
     }
 
     private Expr equality () {
@@ -447,15 +468,51 @@ class Parser {
         return tokens.get(curr - 1);
     }
 
+}
+
+
+abstract class Stmt {
+    abstract <R> R accept(Visitor<R> visitor);
+    interface Visitor<R> {
+        R visitExpressionStmt(Expression stmt);
+        R visitPrintStmt(Print stmt);
+    }
+
+    static class Expression extends Stmt {
+        Expression(Expr expression) {
+            this.expression = expression;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitExpressionStmt(this);
+        }
+
+        final Expr expression;
+    }
+
+    static class Print extends Stmt {
+        Print(Expr expression) {
+            this.expression = expression;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitPrintStmt(this);
+        }
+
+        final Expr expression;
+    }
 
 }
 
-class Interpreter implements Expr.Visitor<Object> {
+class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
-    void interpret(Expr expression) {
+    void interpret(List<Stmt> statements) {
         try {
-            Object value = evaluate(expression);
-            System.out.println(stringify(value));
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
         } catch (RuntimeError error) {
             Jlox.runtimeError(error);
         }
@@ -475,6 +532,14 @@ class Interpreter implements Expr.Visitor<Object> {
         }
 
         return object.toString();
+    }
+
+    private Object evaluate(Expr expr) {
+        return expr.accept(this);
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
     }
 
     @Override
@@ -550,8 +615,17 @@ class Interpreter implements Expr.Visitor<Object> {
         };
     }
 
-    private Object evaluate(Expr expr) {
-        return expr.accept(this);
+    @Override
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Void visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(stringify(value));
+        return null;
     }
 
     private boolean isTruthy(Object o) {
@@ -626,13 +700,13 @@ public class Jlox {
         Lexer lexer = new Lexer(source);
         List<Token> tokens = lexer.lexTokens();
         Parser parser = new Parser(tokens);
-        Expr expression = parser.parse();
+        List<Stmt> statements = parser.parse();
 
         if (hadError) {
             return;
         }
 
-        interpreter.interpret(expression);
+        interpreter.interpret(statements);
     }
 
     static void error(int line, String message) {
