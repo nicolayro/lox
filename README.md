@@ -6,6 +6,7 @@ Interpreter written based on [Crafting Interpreters](https://craftinginterpreter
 
 - jlox: Simple implementation in Java.
 - clox: Full implementation in C.
+- examples: Working example Lox programs.
 - notes: Some thoughs from along the way
 
 ## Usage (jlox)

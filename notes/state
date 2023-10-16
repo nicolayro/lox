@@ -4,3 +4,7 @@ or modifying state.
 
 A program in Lox is defined as a number of statements and the special EOF
 token.
+
+Lox is dynamically scoped, meaning that variables are defined within it's scope.
+The environment is stored in a chain - a block has access to it's environment and
+the global environment. When referencing values, we check in that order.

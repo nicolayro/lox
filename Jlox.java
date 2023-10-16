@@ -210,10 +210,27 @@ class Lexer {
 abstract class Expr {
     abstract <R> R accept(Visitor<R> visitor);
     interface Visitor<R> {
+        R visitAssignExpr(Assign expr);
         R visitBinaryExpr(Binary expr);
         R visitGroupingExpr(Grouping expr);
         R visitLiteralExpr(Literal expr);
         R visitUnaryExpr(Unary expr);
+        R visitVariableExpr(Variable expr);
+    }
+
+    static class Assign extends Expr {
+        Assign(Token name, Expr value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitAssignExpr(this);
+        }
+
+        final Token name;
+        final Expr value;
     }
 
     static class Binary extends Expr {
@@ -273,6 +290,19 @@ abstract class Expr {
         final Token operator;
         final Expr right;
     }
+
+    static class Variable extends Expr {
+        Variable(Token name) {
+            this.name = name;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVariableExpr(this);
+        }
+
+        final Token name;
+    }
 }
 
 class RuntimeError extends RuntimeException {
@@ -296,14 +326,26 @@ class Parser {
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
 
         return statements;
     }
 
     private Expr expression() {
-        return equality();
+        return assigment();
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(TokenType.VAR)) {
+                return varDeclaration();
+            }
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
     }
 
     private Stmt statement() {
@@ -320,11 +362,42 @@ class Parser {
         return new Stmt.Print(value);
     }
 
+    private Stmt varDeclaration() {
+        Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(TokenType.EQUAL)) {
+            initializer = expression();
+        }
+
+        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(TokenType.SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
+
+    private Expr assigment() {
+        Expr expr = equality();
+
+        if (match(TokenType.EQUAL)) {
+            Token equals = previous();
+            Expr value = assigment();
+
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable)expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
 
     private Expr equality () {
         Expr expr = comparison();
@@ -389,6 +462,10 @@ class Parser {
 
         if (match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(previous().literal);
+        }
+
+        if (match(TokenType.IDENTIFIER)) {
+            return new Expr.Variable(previous());
         }
 
         if (match(TokenType.LEFT_PAREN)) {
@@ -470,12 +547,14 @@ class Parser {
 
 }
 
-
 abstract class Stmt {
+
     abstract <R> R accept(Visitor<R> visitor);
+
     interface Visitor<R> {
         R visitExpressionStmt(Expression stmt);
         R visitPrintStmt(Print stmt);
+        R visitVarStmt(Var stmt);
     }
 
     static class Expression extends Stmt {
@@ -504,9 +583,64 @@ abstract class Stmt {
         final Expr expression;
     }
 
+    static class Var extends Stmt {
+        Var(Token name, Expr initializer) {
+            this.name = name;
+            this.initializer = initializer;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitVarStmt(this);
+        }
+
+        final Token name;
+        final Expr initializer;
+    }
+
+}
+
+class Environment {
+    final Environment enclosing;
+    private final Map<String, Object> values = new HashMap<>();
+
+    Environment() {
+        this.enclosing = null;
+    }
+
+    Environment(Environment enclosing) {
+        this.enclosing = enclosing;
+    }
+
+    Object get(Token name) {
+        if (values.containsKey(name.lexeme)) {
+            return values.get(name.lexeme);
+        }
+
+        if (enclosing != null) {
+            return enclosing.get(name);
+        }
+
+        throw new RuntimeError(name, String.format("Undefined variable '%s'.", name.lexeme));
+    }
+
+    void assign(Token name, Object value) {
+        if (values.containsKey(name.lexeme)) {
+            values.put(name.lexeme, value);
+            return;
+        }
+
+        throw new RuntimeError(name, String.format("Undefined variable: '%s'.", name.lexeme));
+    }
+
+    void define(String name, Object value) {
+        values.put(name, value);
+    }
+
 }
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+    private final Environment environment = new Environment();
 
     void interpret(List<Stmt> statements) {
         try {
@@ -564,6 +698,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             case BANG -> !isTruthy(right);
             default -> null;
         };
+    }
+
+    @Override
+    public Object visitVariableExpr(Expr.Variable expr) {
+        return environment.get(expr.name);
     }
 
     @Override
@@ -626,6 +765,24 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Void visitVarStmt(Stmt.Var stmt) {
+        Object value = null;
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer);
+        }
+
+        environment.define(stmt.name.lexeme, value);
+        return null;
+    }
+
+    @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = evaluate(expr.value);
+        environment.assign(expr.name, value);
+        return value;
     }
 
     private boolean isTruthy(Object o) {
@@ -723,13 +880,13 @@ public class Jlox {
     }
 
     static void runtimeError(RuntimeError error) {
-        System.err.printf("%s\n[line %d]", error.getMessage(), error.token.line);
+        System.err.printf("%s\n[line %d]\n", error.getMessage(), error.token.line);
         hadRuntimeError = true;
     }
 
     private static void report(int line, String location, String message) {
         System.err.printf(
-                "[line %d] Error %d: %s%n", line, location, message
+                "[line %d] Error %s: %s%n", line, location, message
         );
         hadError = true;
     }
