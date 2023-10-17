@@ -33,3 +33,13 @@ There is also a small helper script `compile_and_run.sh`
 ./compile_and_run <file>
 ```
 
+## Tests
+
+ The current test suite for this project is a simple output checker for programs in `example` directory.
+ It compares the output of each program with the expected output, defined in the similarily named
+ `.txt` file.
+
+ ```shell
+ ./run_tests.sh
+ ```
+
