@@ -51,7 +51,20 @@ class Lexer {
                 case '/' -> {
                     if (match('/')) {
                         while (peek() != '\n' && !isAtEnd()) nextToken();
-                    } else {
+                    }
+                    else if (match('*')) {
+                        while ((peek() != '*' || peekNext() != '/') && !isAtEnd()) {
+                            nextToken();
+                            System.out.printf("[peek] %s, %s\n", peek(), peekNext());
+                        }
+
+                        // Consume ending '*/' if not at end of file
+                        if (!isAtEnd()) {
+                            nextToken();
+                            nextToken();
+                        }
+                    }
+                    else {
                         addToken(TokenType.SLASH);
                     }
                 }

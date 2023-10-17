@@ -8,6 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Lox interpreter written in Java. The entire implementation is contained within this one file, to give a overview of
+ * everything an interpreter contains.
+ * <p>
+ * Written by Nicolay Caspersen Roness (based on Crafting Interpreters Book)
+ * October 2023
+ */
 public class Jlox {
     static boolean hadError = false;
     static boolean hadRuntimeError = false;
@@ -85,7 +92,7 @@ public class Jlox {
 
     private static void report(int line, String location, String message) {
         System.err.printf(
-                "[line %d] Error %s: %s%n", line, location, message
+                "[line %d] Error%s: %s%n", line, location, message
         );
         hadError = true;
     }

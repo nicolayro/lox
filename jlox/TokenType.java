@@ -1,13 +1,5 @@
 package jlox;
 
-/**
- * Lox interpreter written in Java. The entire implementation is contained within this one file, to give a overview of
- * everything an interpreter contains.
- * <p>
- * Written by Nicolay Caspersen Roness
- * October 2023
- */
-
 enum TokenType {
     // Literals
     IDENTIFIER, STRING, NUMBER,
