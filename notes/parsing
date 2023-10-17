@@ -1,10 +1,10 @@
 The auto generated classes thing is a bit wierd. Interesting to see
 this way of solving the problem. Looking forward to how this will be solved in C.
-The actual usage of the Expr.Visitor is nice.
+The actual usage of the com.github.nicolayro.lox.Expr.Visitor is nice.
 
 As for actually parsing the expressions, this chapter seems exiciting at first. The author
 even reference the book "Compilers: Principles, Techniques and Tools", which has a literal
-dragon gettings slayed  by a knight labeled "LALR Parser Generator". Hilarious!
+dragon gettings slayed  by a knight labeled "LALR com.github.nicolayro.lox.Parser Generator". Hilarious!
 
 The first version of the Lox grammer was ambigous, because it allows for two of the same string
 to generate multiple syntax trees. Therefore we must introduce *precedence*

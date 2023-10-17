@@ -14,17 +14,22 @@ Interpreter written based on [Crafting Interpreters](https://craftinginterpreter
 To run jlox, simply compile and run Jlox.java. For example:
 
 Compile:
-```sh
-javac -d out/ Jlox.java
+```shell
+javac -d target/ jlox/Jlox.java
 ```
 
 Run
-```sh
-java -cp out/ Jlox
+```shell
+java -cp target/ jlox.Jlox
 ```
 
 Run `.lox` source code:
-```sh
-java -cp out/ Jlox <file>
+```shell
+java -cp target/ jlox.Jlox <file>
+```
+
+There is also a small helper script `compile_and_run.sh`
+```shell
+./compile_and_run <file>
 ```
 
