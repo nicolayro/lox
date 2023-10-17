@@ -54,8 +54,8 @@ class Lexer {
                     }
                     else if (match('*')) {
                         while ((peek() != '*' || peekNext() != '/') && !isAtEnd()) {
+                            if (peek() == '\n') line++;
                             nextToken();
-                            System.out.printf("[peek] %s, %s\n", peek(), peekNext());
                         }
 
                         // Consume ending '*/' if not at end of file
