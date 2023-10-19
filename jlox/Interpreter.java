@@ -106,7 +106,10 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 if (left instanceof String && right instanceof String) {
                     yield (String) left + (String) right;
                 }
-                throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
+                if (left instanceof String || right instanceof String) {
+                    yield stringify(left) + stringify(right);
+                }
+                throw new RuntimeError(expr.operator, "Operands must be of same type (or a string).");
             }
             case GREATER -> {
                 checkNumberOperands(expr.operator, left, right);
