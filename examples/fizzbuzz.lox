@@ -1,0 +1,33 @@
+// FizzBuzz
+
+var num = 1;
+while (num <= 100) {
+    var tmp = num;
+    while (tmp >= 0) {
+        tmp = tmp - 3;
+    }
+    tmp = tmp + 3;
+    var is_divisible_by_three = tmp == 0;
+
+    tmp = num;
+    while (tmp >= 0) {
+        tmp = tmp - 5;
+    }
+    tmp = tmp + 3;
+    var is_divisible_by_five = tmp == 0;
+
+    var value = "";
+    if (!is_divisible_by_three and !is_divisible_by_five) {
+        print num;
+    } else {
+        if (is_divisible_by_three) {
+            value = value + "Fizz";
+        }
+        if (is_divisible_by_five) {
+            value = value + "Buzz";
+        }
+        print value;
+    }
+    
+    num = num + 1;
+}

@@ -1,0 +1,23 @@
+Almost turing complete!
+I'm surprised about how easy control flow is. I have a simple expression
+interpreter before, and I always thought the control-flow part would be
+the biggest difficulty jump from that. I would guess this is simple in part 
+because of how much we leverage Java in this implementation though - I'm 
+very much looking forward to implementign a compiled version of this.
+
+I note that ambiguity of then 'if if else' scenario. I have to look more into
+have other languages handle it.
+
+I also failed to evaluate the fact that the 'and' and 'or' operators actually
+are control flow constructs, even though I exploit that very fact all the time,
+for example with null checks or conditional rendering in something like React.
+
+I was very confused as to why visiLogicalExpr was returning the evaluated
+expression instead of true and false, and sat there for quite some time trying
+to figure it out. Eventually I checked in the book - we have dynamic typing!
+Meaning:
+    var cond = "hi" or 2;
+Actually evaluates to... "hi".
+
+'Desugaring'. Very nice. For loops are just converted to already existing
+internals by the parser. Nice.

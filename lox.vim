@@ -12,7 +12,7 @@ if exists("b:current_syntax")
 endif
 
 " Keywords
-syntax keyword loxKeywords var print
+syntax keyword loxKeywords var print if else while for
 
 " String literals
 syntax region loxString start=/\v"/ skip=/\v\\./ end=/\v"/
