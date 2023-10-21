@@ -13,7 +13,7 @@ while (num <= 100) {
     while (tmp >= 0) {
         tmp = tmp - 5;
     }
-    tmp = tmp + 3;
+    tmp = tmp + 5;
     var is_divisible_by_five = tmp == 0;
 
     var value = "";

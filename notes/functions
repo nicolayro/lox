@@ -1,0 +1,8 @@
+Interesting concept that a functional essentially is a postfix operator
+with the highest precidence.
+It's nice that we support currying in this language, seeing as we support
+first class functions.
+Arity: expected number of arguments.
+Native functions are functions implemented in the host language, Java or C in 
+this case. A typical example is print, but we do not supply it here because
+of the builtin keyword 'print'.
