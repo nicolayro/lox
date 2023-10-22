@@ -33,7 +33,6 @@ fun next(data, next) {
     return next;
 }
 
-
 fun create_list() {
     return nil;
 }
@@ -62,11 +61,8 @@ fun length(list) {
 }
 
 fun reverse(list) {
-    if (list == nil) {
-        return nil;
-    }
-
     var reversed = create_list();
+
     while (list != nil) {
         reversed = push(peek(list), reversed);
         list = pop(list);

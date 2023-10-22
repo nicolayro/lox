@@ -1,0 +1,14 @@
+This chapter was slightly boring at first, but as the features came along
+and the theory matured on me, this chapter really was great. It even helped
+me detect a small bug I had in one of my examples! I'm also really interested
+in adding more features to the Resolver, but I'll don't wantto complicate 
+things too much before the C part is done.
+
+I also note this note of his: Many isolated passes are easier to implement,
+but traversing the syntax tree does come with a very real parsing cost.
+
+Some ideas
+    - Static type checking (maybe as another pass?)
+    - 'Break' check (and implement break as well)
+    - Unreachable code
+    - Unused code

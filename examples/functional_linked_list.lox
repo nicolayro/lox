@@ -47,9 +47,9 @@ fun print_list(list) {
 
 fun main() {
     var list = create_list();
-    var list = list_add("1", list);
-    var list = list_add("2", list);
-    var list = list_add("3", list);
+    list = list_add("1", list);
+    list = list_add("2", list);
+    list = list_add("3", list);
 
     print_list(list);
     print "Length: " + list_length(list);

@@ -69,6 +69,9 @@ public class Jlox {
             return;
         }
 
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+
         interpreter.interpret(statements);
     }
 
