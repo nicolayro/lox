@@ -1,0 +1,58 @@
+// using currying to store list data
+fun node(data) {
+    fun fun_data(next) {
+        fun fun_next(cb) {
+            return cb(data, next);
+        }
+        return fun_next;
+    }
+    return fun_data;
+}
+
+// Acces data of node
+fun data(data, next) { return data;
+}
+
+// Acces next
+fun next(data, next) {
+    return next;
+}
+
+
+fun create_list() {
+    return nil;
+}
+
+fun list_add(element, list) {
+    return node(element)(list);
+}
+
+fun list_length(list) {
+    fun internal_list_length(list, acc) {
+        if (list == nil) {
+            return acc;
+        } else {
+            return internal_list_length(list(next), acc + 1);
+        }
+    }
+    return internal_list_length(list, 0);
+}
+
+fun print_list(list) {
+    while (list != nil) {
+        print list(data);
+        list = list(next);
+    }
+}
+
+fun main() {
+    var list = create_list();
+    var list = list_add("1", list);
+    var list = list_add("2", list);
+    var list = list_add("3", list);
+
+    print_list(list);
+    print "Length: " + list_length(list);
+}
+    
+main();
