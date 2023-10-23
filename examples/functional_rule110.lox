@@ -7,8 +7,8 @@
 * Source: https://en.wikipedia.org/wiki/Rule_110
 */
 
-var WIDTH = 60;
-var DEPTH = 60;
+var WIDTH = 110;
+var DEPTH = 110;
 var ON = "#";
 var OFF = " ";
 

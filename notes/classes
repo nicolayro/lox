@@ -1,0 +1,3 @@
+With the resolver made in the previous chapter, the class can now
+be defined before it is assigned, allowing it to reference itself inside it's 
+own body.

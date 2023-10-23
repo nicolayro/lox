@@ -9,7 +9,7 @@ for path in $TEST_DIR; do
     EXPECTED=$(cat "examples/$PROGRAM.txt") 
     ACTUAL=$(./compile_and_run.sh "examples/$PROGRAM.lox")
 
-    if [[ $EXPECTED == $ACTUAL ]]; then
+    if [[ "$EXPECTED" == "$ACTUAL" ]]; then
         echo "[SUCCESS] $PROGRAM"
     else
         echo "[FAIL]    $PROGRAM"
