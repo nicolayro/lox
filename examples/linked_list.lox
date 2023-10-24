@@ -77,6 +77,8 @@ fun main() {
     print "Before: " + list_to_str(list);
     list.remove(0);
     list.remove(7);
+    list.remove(-1);
+    list.remove(50);
     print "After:  " + list_to_str(list);
 }
 

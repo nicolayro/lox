@@ -100,7 +100,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
         }
 
-        return evaluate(expr.left);
+        return evaluate(expr.right);
     }
 
     @Override
