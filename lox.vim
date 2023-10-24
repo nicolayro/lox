@@ -17,7 +17,13 @@ syntax keyword loxKeywords var print if else or and for while fun return class t
 " String literals
 syntax region loxString start=/\v"/ skip=/\v\\./ end=/\v"/
 
-highlight default link loxKeywords  Keyword
-highlight default link loxString    String
+" Comments
+syntax region loxComment start="//" end="$"
+syntax region loxCommentBlock start="/\*" end="\*/"
+
+highlight default link loxKeywords Keyword
+highlight default link loxString String
+highlight default link loxComment Comment
+highlight default link loxCommentBlock  Comment
 
 let b:current_syntax = "lox"
