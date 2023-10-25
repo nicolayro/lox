@@ -4,8 +4,8 @@ Interpreter and compiler implementation in Java and C based on [Crafting Interpr
 
 ## Project Overview
 
-- jlox: Interpreter implementation in Java.
 - clox: Compiler implementation in C.
+- jlox: Interpreter implementation in Java.
 - examples/tests: Working example Lox programs, which are also used for testing.
 - notes: Some thoughts along the way.
 - vim: basic syntax highlighting of .lox files for vim.
@@ -13,11 +13,13 @@ Interpreter and compiler implementation in Java and C based on [Crafting Interpr
 ## Language Overview
 
 Simple Hello, World program:
+
 ```lox
 print "Hello, World";
 ```
 
 ### Features
+
 - Variable declaration, assignment and reassignment.
 - First-class functions
 - Classes (with inheritance)
@@ -30,6 +32,24 @@ print "Hello, World";
 
 Example programs can be found in the [examples](examples) folder.
 
+## Clox
+
+> Compiler of the Lox progamming language, written in C.
+
+### Usage
+
+Compile source code (from `clox` directory):
+
+```shell
+make
+```
+
+You can now run the compiler with:
+
+```shell
+./clox
+```
+
 ## Jlox
 
 > Interpreter of the Lox programming language, written in Java.
@@ -37,11 +57,13 @@ Example programs can be found in the [examples](examples) folder.
 ### Installation
 
 Clone the repository to local machine:
+
 ```shell
 git clone https://github.com/nicolayro/lox.git
 ```
 
 Compile source code:
+
 ```shell
 ./compile
 ```
@@ -54,31 +76,33 @@ The Java interpreter runs Lox programs. You can find some examples of these
 in the [examples](examples) folder.
 
 Run `.lox` source code:
+
 ```shell
 ./run <file>
 ```
 
 You can also run it interactively in a REPL:
+
 ```shell
 ./run
 ```
-Use `Crtl-C`  to exit.
+
+Use `Crtl-C` to exit.
 
 ### Program flow
+
 The interpreter is structured in the following way, from source code to execution:
 
 <img alt="flow.png|50" src="flow.png" width="600"/>
 
-
 ## Tests
 
- The current test suite for this project is a simple output checker for programs in [examples](examples) directory.
- It compares the output of each program with the expected output, defined in the similarily named
- `.txt` file.
+The current test suite for this project is a simple output checker for programs in [examples](examples) directory.
+It compares the output of each program with the expected output, defined in the similarily named
+`.txt` file.
 
 To run the tests:
 
- ```shell
- ./test
- ```
-
+```shell
+./test
+```

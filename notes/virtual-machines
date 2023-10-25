@@ -1,0 +1,5 @@
+The Java interpreter is very ineffiecient. Sure, it's well written, but
+even if we did some nice optimization, we need to use a different strategy for
+getting good speedup.
+
+This is where a virtual machi
