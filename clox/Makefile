@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS+= -Wall -std=c11
 
-OBJECTS:= main.o chunk.o debug.o memory.o value.o
+OBJECTS:= main.o chunk.o debug.o memory.o value.o vm.o
 
 clox: $(OBJECTS) 
 	$(CC) $(CFLAGS) -o $@ $(OBJECTS)
