@@ -2,6 +2,7 @@
 
 #include "chunk.h"
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 
@@ -91,8 +92,7 @@ static InterpretResult run() {
     #undef READ_CONST
 }
 
-InterpretResult interpret(Chunk *chunk) {
-    vm.chunk = chunk;
-    vm.ip = chunk->code;
-    return run();
+InterpretResult interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }       
