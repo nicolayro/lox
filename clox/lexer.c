@@ -139,7 +139,7 @@ static TokenType identifierType() {
         case 's': return checkKeyword(1, 4, "uper", TOKEN_SUPER);
         case 't': 
             if (lexer.current - lexer.start > 1) {
-                switch (lexer.current - lexer.start) {
+                switch (lexer.start[1]) {
                     case 'h': return checkKeyword(2, 2, "is", TOKEN_THIS);
                     case 'r': return checkKeyword(2, 2, "ue", TOKEN_TRUE);
                 }
