@@ -1,1 +1,7 @@
-return 1.2;
+fun mod(a, b) {
+    return a - b * (a/b);
+}
+
+var a = 20.0;
+var b = 7.0;
+print mod(a, b);
