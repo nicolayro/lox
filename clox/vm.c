@@ -111,6 +111,16 @@ static InterpretResult run() {
             case OP_POP:
                 pop();
                 break;
+            case OP_GET_LOCAL: {
+                uint8_t a = READ_BYTE();
+                push(vm.stack[a]);
+                break;
+            }
+            case OP_SET_LOCAL: {
+                uint8_t a = READ_BYTE();
+                vm.stack[a] = peek(0);
+                break;
+            }
             case OP_GET_GLOBAL: {
                 ObjString* name = READ_STRING();
                 Value value;
@@ -233,6 +243,7 @@ static InterpretResult run() {
 
     #undef READ_BYTE
     #undef READ_CONST
+    #undef READ_STRING
 }
 
 InterpretResult interpret(const char* source) {
