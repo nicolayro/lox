@@ -107,7 +107,7 @@ static void skipWhitespace() {
     }
 }
 
-static TokenType checkKeyword(int start, int length, const char* rest, 
+static TokenType checkKeyword(int start, int length, const char* rest,
                               TokenType type) {
     bool isSameLen = lexer.current - lexer.start == start + length;
     bool isSame = memcmp(lexer.start + start, rest, length) == 0;
@@ -126,7 +126,7 @@ static TokenType identifierType() {
             if (lexer.current - lexer.start > 1) {
                 switch (lexer.start[1]) {
                     case 'a': return checkKeyword(2, 3, "lse", TOKEN_FALSE);
-                    case 'o': return checkKeyword(2, 1, "r", TOKEN_OR);
+                    case 'o': return checkKeyword(2, 1, "r", TOKEN_FOR);
                     case 'u': return checkKeyword(2, 1, "n", TOKEN_FUN);
                 }
             }
@@ -137,7 +137,7 @@ static TokenType identifierType() {
         case 'p': return checkKeyword(1, 4, "rint", TOKEN_PRINT);
         case 'r': return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
         case 's': return checkKeyword(1, 4, "uper", TOKEN_SUPER);
-        case 't': 
+        case 't':
             if (lexer.current - lexer.start > 1) {
                 switch (lexer.start[1]) {
                     case 'h': return checkKeyword(2, 2, "is", TOKEN_THIS);
@@ -193,7 +193,7 @@ static Token string() {
 Token nextToken() {
     skipWhitespace();
     lexer.start = lexer.current;
-    
+
     if (isAtEnd()) {
         return makeToken(TOKEN_EOF);
     }
@@ -220,17 +220,17 @@ Token nextToken() {
         case '+': return makeToken(TOKEN_PLUS);
         case '/': return makeToken(TOKEN_SLASH);
         case '*': return makeToken(TOKEN_STAR);
-        case '!': 
+        case '!':
             return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
-        case '=': 
+        case '=':
             return makeToken(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
-        case '>': 
-            return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_LESS);
-        case '<': 
-            return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_GREATER);
+        case '>':
+            return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+        case '<':
+            return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
         case '"':
             return string();
     }
-    
+
     return errorToken("Unexpected character.");
 }
